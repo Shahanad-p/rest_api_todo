@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class AddScreen extends StatefulWidget {
   const AddScreen({super.key});
@@ -35,6 +37,7 @@ class _AddScreenState extends State<AddScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
                 onPressed: () {
+                  dataSubmot();
                   Navigator.pop(context);
                 },
                 child: const Text('Submit'))
@@ -44,7 +47,7 @@ class _AddScreenState extends State<AddScreen> {
     );
   }
 
-  void dataSubmot() async {
+  Future<void> dataSubmot() async {
     //get the data from the server//
     final title = titleController.text;
     final description = descriptionController.text;
@@ -53,9 +56,39 @@ class _AddScreenState extends State<AddScreen> {
       "description": description,
       "is_completed": false
     };
+
     //submit the data to server//
-    final url = 'https://api.nstack.in/v1/todos';
+    const url = 'https://api.nstack.in/v1/todos';
     final uri = Uri.parse(url);
-    // final response = await http.post(uri);
+    final response = await http.post(
+      uri,
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    //show success or fauiled message based on status//
+    if (response.statusCode == 201) {
+      titleController.text = '';
+      descriptionController.text = '';
+      showSuccessMessage('Creation Success');
+    } else {
+      showErrorMessage('Creation Filed');
+    }
+  }
+
+  void showSuccessMessage(message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showErrorMessage(message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
