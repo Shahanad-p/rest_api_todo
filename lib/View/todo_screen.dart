@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:rest_api_todo_app/View/add_screen.dart';
+import 'package:rest_api_todo_app/View/details.dart';
 
 class ToDoListScreen extends StatefulWidget {
   const ToDoListScreen({super.key});
@@ -28,7 +29,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       ),
       body: Visibility(
         visible: isLoading,
-        child: const Center(child: CircularProgressIndicator()),
         replacement: RefreshIndicator(
           onRefresh: () => fetchData(),
           child: ListView.builder(
@@ -36,19 +36,53 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
             itemBuilder: (context, index) {
               final item = items[index] as Map;
               final id = item['_id'] as String;
-              return ListTile(
-                title: Text(item['title']),
-                subtitle: Text(item['description']),
-                trailing: PopupMenuButton(
-                    onSelected: (value) {
-                      if (value == 'edit') {
-                        //edit item//
-                      } else if (value == 'delete') {
-                        //delete and remove the item//
-                        deleteById(id);
-                      }
-                    },
-                    itemBuilder: (context) => [
+              return Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DetailsScreen(
+                            title: item['title'] ?? '',
+                            description: item['description'] ?? '')));
+                  },
+                  child: Container(
+                    height: 80,
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 80, 79, 79),
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                    ),
+                    child: ListTile(
+                      title: Text(
+                        item['title'],
+                        overflow: TextOverflow
+                            .ellipsis, // Use ellipsis to handle overflow
+                        maxLines: 1, // Limit to 1 line
+                        style: const TextStyle(
+                          color: Colors.white,
+                          // Add other style properties as needed
+                        ),
+                      ),
+                      subtitle: Text(
+                        item['description'],
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2, // Limit to 2 lines
+                        style: const TextStyle(
+                          color: Colors.white,
+                          // Add other style properties as needed
+                        ),
+                      ),
+                      trailing: PopupMenuButton(
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            navigateToEditScreen(item);
+                            //edit item//
+                          } else if (value == 'delete') {
+                            //delete and remove the item//
+                            deleteById(id);
+                          }
+                        },
+                        itemBuilder: (context) => [
                           const PopupMenuItem(
                             value: 'edit',
                             child: Text('Edit'),
@@ -56,21 +90,38 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                           const PopupMenuItem(
                             value: 'delete',
                             child: Text('Delete'),
-                          )
-                        ]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               );
             },
           ),
         ),
+        child: const Center(child: CircularProgressIndicator()),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const AddScreen()));
-        },
-        child: const Icon(Icons.add),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: navigateToAddScreen,
+        label: const Icon(Icons.add),
       ),
     );
+  }
+
+  Future<void> navigateToAddScreen() async {
+    final route = MaterialPageRoute(builder: (context) => AddScreen());
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchData();
+  }
+
+  void navigateToEditScreen(Map item) {
+    final route =
+        MaterialPageRoute(builder: (context) => AddScreen(todo: item));
+    Navigator.push(context, route);
   }
 
   Future<void> deleteById(String id) async {
@@ -108,7 +159,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   }
 
   showSuccessMessage(message) {
-    Duration(seconds: 2);
+    const Duration(seconds: 2);
     final snackBar = SnackBar(
       content: Text(message),
       backgroundColor: Colors.green,

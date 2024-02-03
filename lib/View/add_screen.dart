@@ -1,10 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class AddScreen extends StatefulWidget {
-  const AddScreen({super.key});
+  final Map? todo;
+  const AddScreen({super.key, this.todo});
 
   @override
   State<AddScreen> createState() => _AddScreenState();
@@ -13,41 +13,77 @@ class AddScreen extends StatefulWidget {
 class _AddScreenState extends State<AddScreen> {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+  bool isEdit = false;
+  @override
+  void initState() {
+    super.initState();
+    if (widget.todo != null) {
+      isEdit = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add'),
+        title: Text(isEdit ? 'Edit Todo' : 'Add'),
         centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15.0),
         child: ListView(
+          padding: const EdgeInsets.all(16),
           children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(hintText: 'Title'),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  hintText: 'Title',
+                  contentPadding: EdgeInsets.all(10),
+                  border: InputBorder.none,
+                ),
+                maxLines: 2,
+              ),
             ),
-            TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(hintText: 'Description'),
-              minLines: 5,
-              maxLines: 8,
+            const SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.grey),
+              ),
+              child: TextField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  hintText: 'Description',
+                  contentPadding: EdgeInsets.all(10),
+                  border: InputBorder.none,
+                ),
+                minLines: 4,
+                maxLines: 5,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-                onPressed: () {
-                  dataSubmot();
-                  Navigator.pop(context);
-                },
-                child: const Text('Submit'))
+              onPressed: () {
+                dataSubmit();
+                Navigator.pop(context);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(isEdit ? 'Update' : 'Submit'),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future<void> dataSubmot() async {
+  Future<void> dataSubmit() async {
     //get the data from the server//
     final title = titleController.text;
     final description = descriptionController.text;
