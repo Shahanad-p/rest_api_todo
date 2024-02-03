@@ -31,7 +31,6 @@ class _DetailsScreenState extends State<DetailsScreen> {
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25, top: 50),

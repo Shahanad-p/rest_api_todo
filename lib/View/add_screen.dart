@@ -1,6 +1,7 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:rest_api_todo_app/service/todo_service.dart';
+import 'package:rest_api_todo_app/utils/todo_snackbar.dart';
 
 class AddScreen extends StatefulWidget {
   final Map? todo;
@@ -94,77 +95,35 @@ class _AddScreenState extends State<AddScreen> {
   Future<void> dataEdit() async {
     final todo = widget.todo;
     if (todo == null) {
-      print('You can not call update without todo data');
       return;
     }
     final id = todo['_id'];
-    // final isCompleted = todo['is_Completed'];
-    final title = titleController.text;
-    final description = descriptionController.text;
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false
-    };
+
     //submit update data to the server//
-    final url = 'https://api.nstack.in/v1/todos/$id';
-    final uri = Uri.parse(url);
-    final response = await http.put(
-      uri,
-      body: jsonEncode(body),
-      headers: {'Content-Type': 'application/json'},
-    );
-    if (response.statusCode == 200) {
-      titleController.text = '';
-      descriptionController.text = '';
-      showSuccessMessage('Update Success');
+    final isSuccess = await TodoService.updateTodoData(id, body);
+    if (isSuccess) {
+      showSuccessMessage(context, message: 'Update Success');
     } else {
-      showErrorMessage('Update Failed');
+      showErrorMessage(context, message: 'Update Failed');
     }
   }
 
   Future<void> dataSubmit() async {
-    //get the data from the server//
-    final title = titleController.text;
-    final description = descriptionController.text;
-    final body = {
-      "title": title,
-      "description": description,
-      "is_completed": false
-    };
-
     //submit the data to server//
-    const url = 'https://api.nstack.in/v1/todos';
-    final uri = Uri.parse(url);
-    final response = await http.post(
-      uri,
-      body: jsonEncode(body),
-      headers: {'Content-Type': 'application/json'},
-    );
+    final isSuccess = await TodoService.addTodoData(body);
 
     //show success or fauiled message based on status//
-    if (response.statusCode == 201) {
-      titleController.text = '';
-      descriptionController.text = '';
-      showSuccessMessage('Creation Success');
+    if (isSuccess) {
+      showSuccessMessage(context, message: 'Creation Success');
     } else {
-      showErrorMessage('Creation Filed');
+      showErrorMessage(context, message: 'Creation Filed');
     }
   }
 
-  void showSuccessMessage(message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  Map get body {
+    //get the data from the server//
+    final title = titleController.text;
+    final description = descriptionController.text;
+    return {"title": title, "description": description, "is_completed": false};
   }
 }

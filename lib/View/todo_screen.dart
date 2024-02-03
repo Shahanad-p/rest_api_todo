@@ -1,8 +1,9 @@
-import 'dart:convert';
+// ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:rest_api_todo_app/View/add_screen.dart';
 import 'package:rest_api_todo_app/View/details.dart';
+import 'package:rest_api_todo_app/service/todo_service.dart';
+import 'package:rest_api_todo_app/utils/todo_snackbar.dart';
 
 class ToDoListScreen extends StatefulWidget {
   const ToDoListScreen({super.key});
@@ -33,7 +34,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
           onRefresh: () => fetchData(),
           child: Visibility(
             visible: items.isNotEmpty,
-            replacement: Center(child: Text('No items here')),
+            replacement: const Center(child: Text('No items here')),
             child: ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
@@ -103,7 +104,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   }
 
   Future<void> navigateToAddScreen() async {
-    final route = MaterialPageRoute(builder: (context) => AddScreen());
+    final route = MaterialPageRoute(builder: (context) => const AddScreen());
     await Navigator.push(context, route);
     setState(() {
       isLoading = true;
@@ -122,53 +123,29 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   }
 
   Future<void> deleteById(String id) async {
-    //delete the item
-    final url = 'https://api.nstack.in/v1/todos/$id';
-    final uri = Uri.parse(url);
-    final response = await http.delete(uri);
-    if (response.statusCode == 200) {
-      //rempve item from the list
+    final isSuccess = await TodoService.deleteTodoById(id);
+    if (isSuccess) {
       final filtered = items.where((element) => element['_id'] != id).toList();
       setState(() {
         items = filtered;
       });
-      showSuccessMessage('Sucessfully Deleted');
+      showSuccessMessage(context, message: 'Sucessfully Deleted');
     } else {
-      //show error
-      showErrorMessage('Deletion Failed');
+      showErrorMessage(context, message: 'Deletion Failed');
     }
   }
 
   Future<void> fetchData() async {
-    const url = 'https://api.nstack.in/v1/todos?page=1&limit=10';
-    final uri = Uri.parse(url);
-    final response = await http.get(uri);
-    if (response.statusCode == 200) {
-      final json = jsonDecode(response.body) as Map;
-      final result = json['items'] as List;
+    final response = await TodoService.fetchTodoData();
+    if (response != null) {
       setState(() {
-        items = result;
+        items = response;
       });
+    } else {
+      showErrorMessage(context, message: 'Something went wrong');
     }
     setState(() {
       isLoading = false;
     });
-  }
-
-  showSuccessMessage(message) {
-    const Duration(seconds: 2);
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  showErrorMessage(message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }
