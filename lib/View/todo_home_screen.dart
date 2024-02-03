@@ -24,7 +24,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
   }
 
   Future<void> navigateToAddScreen() async {
-    final route = MaterialPageRoute(builder: (context) => const AddScreen());
+    final route = MaterialPageRoute(builder: (context) =>  AddScreen());
     await Navigator.push(context, route);
     setState(() {
       isLoading = true;
@@ -79,16 +79,14 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
                           style: const TextStyle(
-                            color: Colors.white,
-                          ),
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
                           item['description'],
                           overflow: TextOverflow.ellipsis,
                           maxLines: 2,
                           style: const TextStyle(
-                            color: Colors.white,
-                          ),
+                              color: Colors.white, fontWeight: FontWeight.bold),
                         ),
                         trailing: PopupMenuButton(
                           onSelected: (value) {
@@ -145,7 +143,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       setState(() {
         items = response;
       });
-      showSuccessMessage(context, message: 'Successfully added');
+      // showSuccessMessage(context, message: 'Successfully added');
     } else {
       showErrorMessage(context, message: 'Something went wrong');
     }

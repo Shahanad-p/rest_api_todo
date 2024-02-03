@@ -34,12 +34,18 @@ class _DetailsScreenState extends State<DetailsScreen> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25, top: 50),
-                    child: Text(widget.title),
+                    child: Text(
+                      widget.title,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: Text(widget.description),
+                    padding: const EdgeInsets.all(25),
+                    child: Text(
+                      widget.description,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),

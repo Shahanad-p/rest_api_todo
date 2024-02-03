@@ -102,7 +102,7 @@ class _AddScreenState extends State<AddScreen> {
     //submit update data to the server//
     final isSuccess = await TodoService.updateTodoData(id, body);
     if (isSuccess) {
-      showSuccessMessage(context, message: 'Update Success');
+      showSuccessMessage(context, message: 'Successfully Upadated');
     } else {
       showErrorMessage(context, message: 'Update Failed');
     }
@@ -114,7 +114,7 @@ class _AddScreenState extends State<AddScreen> {
 
     //show success or fauiled message based on status//
     if (isSuccess) {
-      showSuccessMessage(context, message: 'Creation Success');
+      showSuccessMessage(context, message: 'Successfully created');
     } else {
       showErrorMessage(context, message: 'Creation Filed');
     }
