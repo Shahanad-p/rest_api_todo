@@ -31,73 +31,66 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
         visible: isLoading,
         replacement: RefreshIndicator(
           onRefresh: () => fetchData(),
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index] as Map;
-              final id = item['_id'] as String;
-              return Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: InkWell(
+          child: Visibility(
+            visible: items.isNotEmpty,
+            replacement: Center(child: Text('No items here')),
+            child: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final item = items[index] as Map;
+                final id = item['_id'] as String;
+                return InkWell(
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => DetailsScreen(
                             title: item['title'] ?? '',
                             description: item['description'] ?? '')));
                   },
-                  child: Container(
-                    height: 80,
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 80, 79, 79),
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        item['title'],
-                        overflow: TextOverflow
-                            .ellipsis, // Use ellipsis to handle overflow
-                        maxLines: 1, // Limit to 1 line
-                        style: const TextStyle(
-                          color: Colors.white,
-                          // Add other style properties as needed
-                        ),
-                      ),
-                      subtitle: Text(
-                        item['description'],
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2, // Limit to 2 lines
-                        style: const TextStyle(
-                          color: Colors.white,
-                          // Add other style properties as needed
-                        ),
-                      ),
-                      trailing: PopupMenuButton(
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            navigateToEditScreen(item);
-                            //edit item//
-                          } else if (value == 'delete') {
-                            //delete and remove the item//
-                            deleteById(id);
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                            value: 'edit',
-                            child: Text('Edit'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5, left: 12, right: 12),
+                    child: Card(
+                      child: ListTile(
+                        title: Text(
+                          item['title'],
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            color: Colors.white,
                           ),
-                          const PopupMenuItem(
-                            value: 'delete',
-                            child: Text('Delete'),
+                        ),
+                        subtitle: Text(
+                          item['description'],
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2,
+                          style: const TextStyle(
+                            color: Colors.white,
                           ),
-                        ],
+                        ),
+                        trailing: PopupMenuButton(
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              navigateToEditScreen(item);
+                            } else if (value == 'delete') {
+                              deleteById(id);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Delete'),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
         child: const Center(child: CircularProgressIndicator()),
@@ -118,10 +111,14 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     fetchData();
   }
 
-  void navigateToEditScreen(Map item) {
+  Future<void> navigateToEditScreen(Map item) async {
     final route =
         MaterialPageRoute(builder: (context) => AddScreen(todo: item));
-    Navigator.push(context, route);
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchData();
   }
 
   Future<void> deleteById(String id) async {

@@ -17,6 +17,14 @@ class _AddScreenState extends State<AddScreen> {
   @override
   void initState() {
     super.initState();
+    final fillTodo = widget.todo;
+    if (fillTodo != null) {
+      isEdit = true;
+      final title = fillTodo['title'];
+      final description = fillTodo['description'];
+      titleController.text = title;
+      descriptionController.text = description;
+    }
     if (widget.todo != null) {
       isEdit = true;
     }
@@ -69,7 +77,7 @@ class _AddScreenState extends State<AddScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                dataSubmit();
+                isEdit ? dataEdit() : dataSubmit();
                 Navigator.pop(context);
               },
               child: Padding(
@@ -81,6 +89,38 @@ class _AddScreenState extends State<AddScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> dataEdit() async {
+    final todo = widget.todo;
+    if (todo == null) {
+      print('You can not call update without todo data');
+      return;
+    }
+    final id = todo['_id'];
+    // final isCompleted = todo['is_Completed'];
+    final title = titleController.text;
+    final description = descriptionController.text;
+    final body = {
+      "title": title,
+      "description": description,
+      "is_completed": false
+    };
+    //submit update data to the server//
+    final url = 'https://api.nstack.in/v1/todos/$id';
+    final uri = Uri.parse(url);
+    final response = await http.put(
+      uri,
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      titleController.text = '';
+      descriptionController.text = '';
+      showSuccessMessage('Update Success');
+    } else {
+      showErrorMessage('Update Failed');
+    }
   }
 
   Future<void> dataSubmit() async {
@@ -106,39 +146,25 @@ class _AddScreenState extends State<AddScreen> {
     if (response.statusCode == 201) {
       titleController.text = '';
       descriptionController.text = '';
-      // showSuccessMessage('Creation Success');
-      showSuccessMessage(message) {
-        final snackBar = SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.green,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
+      showSuccessMessage('Creation Success');
     } else {
-      // showErrorMessage('Creation Filed');
-      showErrorMessage(message) {
-        final snackBar = SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
+      showErrorMessage('Creation Filed');
     }
   }
 
-  // void showSuccessMessage(message) {
-  //   final snackBar = SnackBar(
-  //     content: Text(message),
-  //     backgroundColor: Colors.green,
-  //   );
-  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  // }
+  void showSuccessMessage(message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.green,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
-  // void showErrorMessage(message) {
-  //   final snackBar = SnackBar(
-  //     content: Text(message),
-  //     backgroundColor: Colors.red,
-  //   );
-  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  // }
+  void showErrorMessage(message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 }
