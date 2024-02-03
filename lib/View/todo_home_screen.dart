@@ -1,9 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:rest_api_todo_app/View/add_screen.dart';
 import 'package:rest_api_todo_app/View/details.dart';
 import 'package:rest_api_todo_app/service/todo_service.dart';
 import 'package:rest_api_todo_app/utils/todo_snackbar.dart';
+// import 'package:lottie/lottie.dart';
 
 class ToDoListScreen extends StatefulWidget {
   const ToDoListScreen({super.key});
@@ -21,6 +23,25 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     fetchData();
   }
 
+  Future<void> navigateToAddScreen() async {
+    final route = MaterialPageRoute(builder: (context) => const AddScreen());
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchData();
+  }
+
+  Future<void> navigateToEditScreen(Map item) async {
+    final route =
+        MaterialPageRoute(builder: (context) => AddScreen(todo: item));
+    await Navigator.push(context, route);
+    setState(() {
+      isLoading = true;
+    });
+    fetchData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +55,9 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
           onRefresh: () => fetchData(),
           child: Visibility(
             visible: items.isNotEmpty,
-            replacement: const Center(child: Text('No items here')),
+            replacement: Center(
+                child: Lottie.asset('assets/Animation - 1703942875916.json',
+                    height: 200, width: 200)),
             child: ListView.builder(
               itemCount: items.length,
               itemBuilder: (context, index) {
@@ -103,25 +126,6 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
     );
   }
 
-  Future<void> navigateToAddScreen() async {
-    final route = MaterialPageRoute(builder: (context) => const AddScreen());
-    await Navigator.push(context, route);
-    setState(() {
-      isLoading = true;
-    });
-    fetchData();
-  }
-
-  Future<void> navigateToEditScreen(Map item) async {
-    final route =
-        MaterialPageRoute(builder: (context) => AddScreen(todo: item));
-    await Navigator.push(context, route);
-    setState(() {
-      isLoading = true;
-    });
-    fetchData();
-  }
-
   Future<void> deleteById(String id) async {
     final isSuccess = await TodoService.deleteTodoById(id);
     if (isSuccess) {
@@ -141,6 +145,7 @@ class _ToDoListScreenState extends State<ToDoListScreen> {
       setState(() {
         items = response;
       });
+      showSuccessMessage(context, message: 'Successfully added');
     } else {
       showErrorMessage(context, message: 'Something went wrong');
     }
