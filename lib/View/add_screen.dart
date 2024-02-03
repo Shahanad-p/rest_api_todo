@@ -70,25 +70,39 @@ class _AddScreenState extends State<AddScreen> {
     if (response.statusCode == 201) {
       titleController.text = '';
       descriptionController.text = '';
-      showSuccessMessage('Creation Success');
+      // showSuccessMessage('Creation Success');
+      showSuccessMessage(message) {
+        final snackBar = SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.green,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     } else {
-      showErrorMessage('Creation Filed');
+      // showErrorMessage('Creation Filed');
+      showErrorMessage(message) {
+        final snackBar = SnackBar(
+          content: Text(message),
+          backgroundColor: Colors.red,
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      }
     }
   }
 
-  void showSuccessMessage(message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.green,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+  // void showSuccessMessage(message) {
+  //   final snackBar = SnackBar(
+  //     content: Text(message),
+  //     backgroundColor: Colors.green,
+  //   );
+  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  // }
 
-  void showErrorMessage(message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red,
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
+  // void showErrorMessage(message) {
+  //   final snackBar = SnackBar(
+  //     content: Text(message),
+  //     backgroundColor: Colors.red,
+  //   );
+  //   ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  // }
 }
