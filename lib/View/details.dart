@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends StatelessWidget {
   final String title;
   final String description;
 
   const DetailsScreen(
       {super.key, required this.title, required this.description});
 
-  @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
-}
-
-class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,7 +30,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25, top: 50),
                     child: Text(
-                      widget.title,
+                      title,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -43,7 +38,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   Padding(
                     padding: const EdgeInsets.all(25.10),
                     child: Text(
-                      widget.description,
+                      description,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
