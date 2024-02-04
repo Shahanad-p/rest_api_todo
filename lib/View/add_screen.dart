@@ -39,20 +39,20 @@ class _AddScreenState extends State<AddScreen> {
         centerTitle: true,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(15.10),
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16.10),
           children: [
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.10),
                 border: Border.all(color: Colors.grey),
               ),
               child: TextField(
                 controller: titleController,
                 decoration: const InputDecoration(
                   hintText: 'Title',
-                  contentPadding: EdgeInsets.all(10),
+                  contentPadding: EdgeInsets.all(10.10),
                   border: InputBorder.none,
                 ),
                 maxLines: 2,
@@ -61,14 +61,14 @@ class _AddScreenState extends State<AddScreen> {
             const SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(10.10),
                 border: Border.all(color: Colors.grey),
               ),
               child: TextField(
                 controller: descriptionController,
                 decoration: const InputDecoration(
                   hintText: 'Description',
-                  contentPadding: EdgeInsets.all(10),
+                  contentPadding: EdgeInsets.all(10.10),
                   border: InputBorder.none,
                 ),
                 minLines: 4,
@@ -82,7 +82,7 @@ class _AddScreenState extends State<AddScreen> {
                 Navigator.pop(context);
               },
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(12.10),
                 child: Text(isEdit ? 'Update' : 'Submit'),
               ),
             ),
