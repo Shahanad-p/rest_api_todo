@@ -41,7 +41,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   ),
                   const Divider(),
                   Padding(
-                    padding: const EdgeInsets.all(25),
+                    padding: const EdgeInsets.all(25.10),
                     child: Text(
                       widget.description,
                       style: const TextStyle(fontWeight: FontWeight.bold),
